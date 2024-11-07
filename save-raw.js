@@ -17,7 +17,9 @@ const server = dgram.createSocket('udp4');
 const stream = new DatagramStream();
 
 // Cria um stream de escrita para o arquivo de saída
-const fileStream = fs.createWriteStream(OUTPUT_FILE);
+const fileStream = fs.createWriteStream(OUTPUT_FILE, {
+    autoClose: true
+});
 
 // Conecta o stream de datagramas ao stream de escrita do arquivo
 stream.pipe(fileStream);
@@ -25,9 +27,16 @@ stream.pipe(fileStream);
 // Evento de mensagem recebida
 server.on('message', (msg) => {
     // Remove o cabeçalho RTP (12 bytes)
-    const audioData = msg.slice(12);
+    const audioData = msg.subarray(12);
     // Escreve os dados de áudio no stream de datagramas
     stream.write(audioData);
+});
+
+server.on('close', () => {
+    if (fileStream) {
+        fileStream.close();
+    }
+    console.log('Servidor encerrado');
 });
 
 // Evento de erro
