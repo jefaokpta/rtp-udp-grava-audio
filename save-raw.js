@@ -28,6 +28,10 @@ stream.pipe(fileStream);
 server.on('message', (msg) => {
     // Remove o cabeçalho RTP (12 bytes)
     const audioData = msg.subarray(12);
+    //swap 16 bits se codec for SLIN pq SLIN é big-endian e providers STT esperam little-endian
+    // if (this.swap16) {
+    //     buf.swap16();
+    // }
     // Escreve os dados de áudio no stream de datagramas
     stream.write(audioData);
 });
