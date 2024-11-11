@@ -1,7 +1,7 @@
 const fs = require('fs');
 const dgram = require('dgram');
 const DatagramStream = require('datagram-stream');
-const { GoogleSpeechProvider } = require('./google-speech-provider');
+const speech = require('@google-cloud/speech');
 
 const PORT = process.argv[2] || 9999;
 const HOST = '0.0.0.0';
@@ -22,35 +22,35 @@ const fileStream = fs.createWriteStream(OUTPUT_FILE, {
 stream.pipe(fileStream);
 
 // Configuração do Google Speech API
-const config = {
-    encoding: 'LINEAR16',
-    sampleRateHertz: 16000,
-    languageCode: 'pt-BR',
+const client = new speech.SpeechClient();
+const request = {
+    config: {
+        encoding: 'LINEAR16',
+        sampleRateHertz: 16000,
+        languageCode: 'pt-BR',
+    },
+    interimResults: true, // If you want interim results, set this to true
 };
-
-// Função de callback para transcrição
-const transcriptCallback = (transcript, isFinal) => {
-    if (isFinal) {
-        console.log(`Transcrição final: ${transcript}`);
-    } else {
-        console.log(`Transcrição parcial: ${transcript}`);
-    }
-};
-
-// Função de callback para resultados completos
-const resultsCallback = (results) => {
-    console.log('Resultados completos:', results);
-};
-
-// Cria uma instância do GoogleSpeechProvider
-const googleSpeechProvider = new GoogleSpeechProvider(config, stream, transcriptCallback, resultsCallback);
 
 // Evento de mensagem recebida
 server.on('message', (msg) => {
     // Remove o cabeçalho RTP (12 bytes)
     const audioData = msg.subarray(12);
-    // Escreve os dados de áudio no stream de datagramas
-    stream.write(audioData);
+
+    // Cria um stream de reconhecimento
+    const recognizeStream = client
+        .streamingRecognize(request)
+        .on('error', console.error)
+        .on('data', (data) =>
+            process.stdout.write(
+                data.results[0] && data.results[0].alternatives[0]
+                    ? `Transcrição: ${data.results[0].alternatives[0].transcript}\n`
+                    : '\n\nReached transcription time limit, press Ctrl+C\n'
+            )
+        );
+
+    // Escreve os dados de áudio no stream de reconhecimento
+    recognizeStream.write(audioData);
 });
 
 server.on('close', () => {
