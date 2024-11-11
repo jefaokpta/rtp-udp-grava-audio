@@ -9,8 +9,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "datagram-stream": "^1.1.1",
-    "wav": "^1.0.2",
-    "lame": "github:FlatIO/node-lame#ff6643b17e1a829247189d5e99783d456d0ff4b6"
+    "datagram-stream": "^1.1.1"
   }
 }

@@ -6,7 +6,7 @@ const fs = require('fs');
 const dgram = require('dgram');
 const DatagramStream = require('datagram-stream');
 
-const PORT = 9999;
+const PORT = process.argv[2] || 9999;
 const HOST = '0.0.0.0';
 const OUTPUT_FILE = 'audios/audio.raw';
 
@@ -22,7 +22,7 @@ const fileStream = fs.createWriteStream(OUTPUT_FILE, {
 });
 
 // Conecta o stream de datagramas ao stream de escrita do arquivo
-stream.pipe(fileStream);
+steam.pipe(fileStream);
 
 // Evento de mensagem recebida
 server.on('message', (msg) => {
