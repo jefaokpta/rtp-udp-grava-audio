@@ -5,7 +5,7 @@
 const fs = require('fs');
 const dgram = require('dgram');
 const DatagramStream = require('datagram-stream');
-const GoogleSpeechProvider = require('./google-speech-provider');
+const provider= require('./google-speech-provider');
 
 const PORT = process.argv[2] || 9999;
 const HOST = '0.0.0.0';
@@ -40,7 +40,7 @@ server.on('message', (msg) => {
         sampleRateHertz: 16000,
         languageCode: 'pt-BR',
     };
-    new GoogleSpeechProvider(config, server, (transcript, isFinal) => {
+    new provider.GoogleSpeechProvider(config, server, (transcript, isFinal) => {
         console.log(transcript);
     }, (results) => {
         console.log(results);
