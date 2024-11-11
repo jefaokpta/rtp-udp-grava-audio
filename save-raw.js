@@ -40,11 +40,6 @@ server.on('message', (msg) => {
         sampleRateHertz: 16000,
         languageCode: 'pt-BR',
     };
-    new provider.GoogleSpeechProvider(config, server, (transcript, isFinal) => {
-        console.log(transcript);
-    }, (results) => {
-        console.log(results);
-    })
 });
 
 server.on('close', () => {
