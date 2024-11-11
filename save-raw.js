@@ -5,6 +5,7 @@
 const fs = require('fs');
 const dgram = require('dgram');
 const DatagramStream = require('datagram-stream');
+const GoogleSpeechProvider = require('./google-speech-provider');
 
 const PORT = process.argv[2] || 9999;
 const HOST = '0.0.0.0';
@@ -22,7 +23,7 @@ const fileStream = fs.createWriteStream(OUTPUT_FILE, {
 });
 
 // Conecta o stream de datagramas ao stream de escrita do arquivo
-steam.pipe(fileStream);
+stream.pipe(fileStream);
 
 // Evento de mensagem recebida
 server.on('message', (msg) => {
@@ -34,6 +35,16 @@ server.on('message', (msg) => {
     // }
     // Escreve os dados de áudio no stream de datagramas
     stream.write(audioData);
+    const config = {
+        encoding: 'LINEAR16',
+        sampleRateHertz: 16000,
+        languageCode: 'pt-BR',
+    };
+    new GoogleSpeechProvider(config, server, (transcript, isFinal) => {
+        console.log(transcript);
+    }, (results) => {
+        console.log(results);
+    })
 });
 
 server.on('close', () => {
