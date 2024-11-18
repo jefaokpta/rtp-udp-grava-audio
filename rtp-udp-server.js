@@ -70,12 +70,12 @@ class RtpUdpServerSocket {
 
 		this.server.on('message', (msg, rinfo) => {
 			/* Strip the 12 byte RTP header */
-			let buf = msg.slice(12);
-			if (this.swap16) {
-				buf.swap16();
-			}
+			let buf = msg.subarray(12);
 			if (this.fileStream) {
 				this.fileStream.write(buf);
+			}
+			if (this.swap16) {
+				buf.swap16();
 			}
 			this.server.emit('data', buf);
 		});
