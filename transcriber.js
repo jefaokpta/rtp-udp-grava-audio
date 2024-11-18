@@ -33,7 +33,7 @@ const transcriptCallback = (transcript, isFinal) => {
 
 // Callback function to handle full results
 const resultsCallback = (results) => {
-    console.log('Full results:', results);
+    console.log('Full results:', results[0].alternatives[0].transcript)
 };
 
 // Create an instance of GoogleSpeechProvider
