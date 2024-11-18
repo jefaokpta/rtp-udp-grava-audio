@@ -54,7 +54,7 @@
  */
 
 const {Transform} = require('stream');
-const speech = require('@google-cloud/speech').v2;
+const speech = require('@google-cloud/speech').v1p1beta1
 
 class GoogleSpeechProvider {
 	constructor(config, socket, transcriptCallback, resultsCallback) {
